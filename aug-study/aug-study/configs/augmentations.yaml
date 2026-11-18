@@ -1,0 +1,33 @@
+# Пресети аугментацій. Ключі:
+#   flip: true                  - RandomHorizontalFlip
+#   crop_padding: P             - RandomCrop(32, padding=P)
+#   rotation: DEG               - RandomRotation(±DEG)
+#   color_jitter: S             - ColorJitter(brightness=contrast=saturation=S)
+#   cutout: SIZE                - Cutout, квадрат SIZE x SIZE
+#   randaugment: [N, M]         - RandAugment(num_ops=N, magnitude=M)
+#   mixup_alpha: A              - Mixup, Beta(A, A)
+#   cutmix_alpha: A             - CutMix, Beta(A, A)
+baseline: {}
+
+# --- одиночні аугментації ---
+flip:            {flip: true}
+crop:            {crop_padding: 4}
+rotation_5:      {rotation: 5}
+rotation_15:     {rotation: 15}
+rotation_30:     {rotation: 30}
+color_jitter:    {color_jitter: 0.4}
+cutout_8:        {cutout: 8}
+cutout_16:       {cutout: 16}
+mixup_a0.2:      {mixup_alpha: 0.2}
+mixup_a1:        {mixup_alpha: 1.0}
+cutmix_a1:       {cutmix_alpha: 1.0}
+randaug_n1_m5:   {randaugment: [1, 5]}
+randaug_n2_m9:   {randaugment: [2, 9]}
+randaug_n2_m14:  {randaugment: [2, 14]}
+
+# --- комбінації ---
+flip_crop:             {flip: true, crop_padding: 4}
+flip_crop_cutout:      {flip: true, crop_padding: 4, cutout: 16}
+flip_crop_randaug:     {flip: true, crop_padding: 4, randaugment: [2, 9]}
+flip_crop_mixup:       {flip: true, crop_padding: 4, mixup_alpha: 0.2}
+flip_crop_cutmix:      {flip: true, crop_padding: 4, cutmix_alpha: 1.0}
