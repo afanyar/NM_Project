@@ -3,6 +3,7 @@
 
   python run_grid.py --plan main --out results
   python run_grid.py --plan sample_efficiency --out results
+  python run_grid.py --plan main --seeds 0      # лише один seed (зручно ділити довгий план на частини)
 """
 import argparse
 import gc
@@ -22,9 +23,15 @@ def main():
     ap.add_argument("--model", default=None)
     ap.add_argument("--data_root", default=None)
     ap.add_argument("--smoke", action="store_true")
+    ap.add_argument("--seeds", type=int, nargs="+", default=None, help="перевизначити seeds плану")
+    ap.add_argument("--fracs", type=float, nargs="+", default=None, help="перевизначити fracs плану")
+    ap.add_argument("--augs", nargs="+", default=None, help="перевизначити список аугментацій")
     a = ap.parse_args()
 
-    plan = load_yaml(a.plans_file)[a.plan]
+    plan = dict(load_yaml(a.plans_file)[a.plan])
+    for key in ("seeds", "fracs", "augs"):
+        if getattr(a, key) is not None:
+            plan[key] = getattr(a, key)
     # seed - зовнішній цикл: при обриві сесії маємо повні набори для менших seed
     jobs = [(s, f, aug) for s in plan["seeds"] for f in plan["fracs"] for aug in plan["augs"]]
     print(f"План '{a.plan}': {len(jobs)} запусків")
@@ -36,7 +43,8 @@ def main():
             + (["--epochs", str(a.epochs)] if a.epochs else [])
             + (["--model", a.model] if a.model else [])
             + (["--data_root", a.data_root] if a.data_root else [])
-            + (["--smoke"] if a.smoke else []))
+            + (["--smoke"] if a.smoke else [])
+            + (["--equal_steps"] if plan.get("equal_steps") else []))
         run_experiment(build_cfg(args))
         gc.collect()
         torch.cuda.empty_cache()

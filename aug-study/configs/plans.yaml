@@ -16,3 +16,9 @@ smoke:                    # швидка перевірка, що все пра�
   fracs: [1.0]
   seeds: [0]
   augs: [baseline, flip_crop, cutout_8, mixup_a0.2, cutmix_a1, randaug_n2_m9]
+
+sample_efficiency_equal_steps:   # те саме, але з однаковою кількістю кроків оптимізації
+  equal_steps: true              # (epochs = 30/frac): відокремлює ефект даних від ефекту бюджету
+  fracs: [0.1, 0.25, 0.5]
+  seeds: [0, 1, 2]
+  augs: [baseline, flip_crop, flip_crop_cutout, flip_crop_randaug]

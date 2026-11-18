@@ -28,8 +28,9 @@ def save_json(obj, path):
         json.dump(obj, f, indent=2, ensure_ascii=False)
 
 
-def make_run_id(aug_name, frac, seed):
-    return f"{aug_name}__f{frac:g}__s{seed}"
+def make_run_id(aug_name, frac, seed, equal_steps=False):
+    suffix = "__eqsteps" if equal_steps else ""
+    return f"{aug_name}__f{frac:g}__s{seed}{suffix}"
 
 
 def run_dir(out, run_id):

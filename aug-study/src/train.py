@@ -31,6 +31,13 @@ def build_cfg(args):
     cfg["out"] = args.out
     if args.epochs is not None:
         cfg["train"]["epochs"] = args.epochs
+    # Режим однакового бюджету оптимізації: при частці даних frac епох у 1/frac разів більше,
+    # щоб кількість кроків градієнта лишалась такою ж, як на 100% даних.
+    cfg["equal_steps"] = bool(args.equal_steps and args.train_frac < 1.0)
+    if cfg["equal_steps"]:
+        scale = 1.0 / args.train_frac
+        cfg["train"]["epochs"] = int(round(cfg["train"]["epochs"] * scale))
+        cfg["train"]["warmup_epochs"] = cfg["train"]["warmup_epochs"] * scale
     if args.model is not None:
         cfg["model"]["name"] = args.model
     if args.data_root is not None:
@@ -47,7 +54,9 @@ def lr_at(it, warm, total, base_lr):
 
 def run_experiment(cfg, force=False, save_ckpt=False):
     tcfg = cfg["train"]
-    run_id = make_run_id(cfg["aug_name"], cfg["train_frac"], cfg["seed"])
+    run_id = make_run_id(cfg["aug_name"], cfg["train_frac"], cfg["seed"], cfg.get("equal_steps", False))
+    if cfg["smoke"]:  # smoke-запуски не повинні збігатися зі справжніми run_id
+        run_id = "SMOKE__" + run_id
     rdir = run_dir(cfg["out"], run_id)
     if (rdir / "metrics.json").exists() and not force:
         print(f"[skip] {run_id} вже виконано")
@@ -121,7 +130,7 @@ def run_experiment(cfg, force=False, save_ckpt=False):
     metrics = {
         "run_id": run_id, "aug_name": cfg["aug_name"], "seed": cfg["seed"],
         "train_frac": cfg["train_frac"], "n_train": n_train, "model": cfg["model"]["name"],
-        "epochs": tcfg["epochs"], "params": n_params,
+        "epochs": tcfg["epochs"], "equal_steps": cfg.get("equal_steps", False), "params": n_params,
         "final_train_clean_acc": last["train_clean_acc"], "final_val_acc": last["val_acc"],
         "gen_gap": last["train_clean_acc"] - last["val_acc"],
         "best_val_acc": best["val_acc"], "best_val_epoch": best["epoch"],
@@ -147,6 +156,8 @@ def get_parser():
     p.add_argument("--augs_file", default="configs/augmentations.yaml")
     p.add_argument("--out", default="results")
     p.add_argument("--smoke", action="store_true", help="випадкові дані, швидка перевірка коду")
+    p.add_argument("--equal_steps", action="store_true",
+                   help="при train_frac<1 збільшити кількість епох у 1/frac разів")
     p.add_argument("--force", action="store_true", help="перезаписати вже виконаний запуск")
     p.add_argument("--save_ckpt", action="store_true")
     return p

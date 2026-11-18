@@ -25,10 +25,12 @@ results/runs/<run_id>/   config.json, epochs.csv, metrics.json, confusion_matrix
 ## Швидкий старт
 ```bash
 pip install -r requirements.txt
-python -m src.train --aug baseline --smoke --epochs 2      # перевірка коду на випадкових даних
+python -m src.train --aug baseline --smoke --epochs 2 --out /tmp/smoke   # перевірка коду на випадкових даних
 python -m src.train --aug flip_crop --seed 0               # один справжній запуск
 python run_grid.py --plan main                             # повне порівняння (20 конфігурацій x 3 seed)
-python run_grid.py --plan sample_efficiency                # частки даних 10/25/50%
+python run_grid.py --plan sample_efficiency                # частки даних 10/25/50%, 30 епох
+python run_grid.py --plan sample_efficiency_equal_steps    # те саме, але однакова кількість кроків
+python run_grid.py --plan main --seeds 0                   # лише один seed (ділити довгий план)
 python visualize_augs.py --augs flip_crop cutout_16 rotation_30 mixup_a1 cutmix_a1
 ```
 
@@ -39,7 +41,7 @@ python visualize_augs.py --augs flip_crop cutout_16 rotation_30 mixup_a1 cutmix_
 !git clone https://github.com/<user>/<repo>.git
 %cd <repo>
 !pip install -q -r requirements.txt
-!python -m src.train --aug baseline --smoke --epochs 2
+!python -m src.train --aug baseline --smoke --epochs 2 --out /tmp/smoke
 !python run_grid.py --plan main --out /kaggle/working/results --data_root /kaggle/working/data
 ```
 3. «Save Version → Save & Run All»: результати з `/kaggle/working/results` зберігаються як output ноутбука. Завантажте їх і закомітьте в `results/`.
