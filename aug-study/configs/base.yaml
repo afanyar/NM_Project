@@ -1,0 +1,19 @@
+# Спільні налаштування для ВСІХ експериментів: змінюється лише аугментація.
+data:
+  root: ./data
+  val_size: 5000        # 45k train / 5k val (стратифіковано)
+  split_seed: 0         # фіксований спліт train/val, не залежить від seed навчання
+  num_workers: 4
+model:
+  name: resnet20        # resnet20 (швидко) | resnet18 (повільніше, точніше)
+train:
+  epochs: 30
+  batch_size: 128
+  lr: 0.1
+  momentum: 0.9
+  nesterov: true
+  weight_decay: 5.0e-4
+  warmup_epochs: 2      # лінійний warmup, далі cosine до 0
+  label_smoothing: 0.0
+  amp: true             # mixed precision (тільки на GPU)
+  clean_train_eval_size: 5000   # підвибірка train для "чистої" train accuracy
