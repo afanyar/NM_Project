@@ -4,7 +4,7 @@ main:                     # повне порівняння на 100% даних
   seeds: [0, 1, 2]
   augs: [baseline, flip, crop, rotation_5, rotation_15, rotation_30, color_jitter,
          cutout_8, cutout_16, mixup_a0.2, mixup_a1, cutmix_a1,
-         randaug_n1_m5, randaug_n2_m9, randaug_n2_m14,
+         randaug_n1_m5, randaug_n2_m9, randaug_n2_m14, randaug_n2_m20,
          flip_crop, flip_crop_cutout, flip_crop_randaug, flip_crop_mixup, flip_crop_cutmix]
 
 sample_efficiency:        # вибіркова ефективність (100% вже є в плані main)

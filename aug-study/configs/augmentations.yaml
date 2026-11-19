@@ -24,6 +24,7 @@ cutmix_a1:       {cutmix_alpha: 1.0}
 randaug_n1_m5:   {randaugment: [1, 5]}
 randaug_n2_m9:   {randaugment: [2, 9]}
 randaug_n2_m14:  {randaugment: [2, 14]}
+randaug_n2_m20:  {randaugment: [2, 20]}
 
 # --- комбінації ---
 flip_crop:             {flip: true, crop_padding: 4}
